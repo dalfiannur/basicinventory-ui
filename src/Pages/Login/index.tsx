@@ -1,4 +1,4 @@
-import React, {ReactComponentElement, useCallback, useState} from "react";
+import React, {useCallback, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import CssBaseLine from "@material-ui/core/CssBaseline";
 import Avatar from '@material-ui/core/Avatar';
@@ -57,6 +57,14 @@ interface ILoginComponent extends RouteComponentProps{
 
 }
 
+interface ILoginResponse {
+    message: string;
+    data: {
+        tokenType: string,
+        accessToken: string,
+    };
+}
+
 const LoginComponent = (props: ILoginComponent) => {
     const classes = useStyles();
 
@@ -64,20 +72,18 @@ const LoginComponent = (props: ILoginComponent) => {
     const [password, setPassword] = useState('');
 
     const doLogin = useCallback(() => {
-        localStorage.setItem('userAuthToken', 'oke');
-        props.history.push('/');
-
+        console.log(username);
         fetch(process.env.REACT_APP_API + '/auth/login', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 username, password
             })
-        }).then((response: Response) => {
-            if (response.status === 200) {
-                console.log(response.body)
-            } else {
-                console.error(response.body);
-            }
+        }).then((response: any) => response.json()).then((res: ILoginResponse) => {
+            localStorage.setItem('userAuthToken', res.data.accessToken);
+            props.history.push('/');
         }).catch((error: Error) => {
             console.error(error.message)
         });
