@@ -1,33 +1,39 @@
-import React, {useCallback, useState} from "react";
+import React, { useCallback, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import CssBaseLine from "@material-ui/core/CssBaseline";
 import Avatar from '@material-ui/core/Avatar';
 import Typography from "@material-ui/core/Typography";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import {withRouter, RouteComponentProps} from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { LoginProps, ILoginResponse } from "./interfaces";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: '100vh'
-    },
-    image: {
+        height: '100vh',
         backgroundImage: 'url(https://source.unsplash.com/random)',
         backgroundRepeat: 'no-repeat',
         backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
         backgroundSize: 'cover',
         backgroundPosition: 'center',
     },
+    leftSection: {
+        display: 'flex'
+    },
     paper: {
+        height: 450,
         margin: theme.spacing(8, 4),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        justifyItems: 'center',
+        padding: 15,
+        alignSelf: 'center'
     },
     avatar: {
         margin: theme.spacing(1),
@@ -46,33 +52,20 @@ const Copyright = () => (
     <Typography variant="body2" color="textSecondary" align="center">
         {'Copyright © '}
         <Link color="inherit" href="https://material-ui.com/">
-            Your Website
+            Basic Inventory
         </Link>{' '}
         {new Date().getFullYear()}
         {'.'}
     </Typography>
 );
 
-interface ILoginComponent extends RouteComponentProps{
-
-}
-
-interface ILoginResponse {
-    message: string;
-    data: {
-        tokenType: string,
-        accessToken: string,
-    };
-}
-
-const LoginComponent = (props: ILoginComponent) => {
+const LoginComponent = (props: LoginProps) => {
     const classes = useStyles();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const doLogin = useCallback(() => {
-        console.log(username);
         fetch(process.env.REACT_APP_API + '/auth/login', {
             method: 'POST',
             headers: {
@@ -87,14 +80,14 @@ const LoginComponent = (props: ILoginComponent) => {
         }).catch((error: Error) => {
             console.error(error.message)
         });
-    }, [username, password]);
+    }, [username, password, props]);
 
     return (
         <Grid container component={'main'} className={classes.root}>
             <CssBaseLine />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <div className={classes.paper}>
+            <Grid item xs={false} sm={4} md={8} />
+            <Grid item xs={12} sm={8} md={4} className={classes.leftSection}   >
+                <Paper className={classes.paper}>
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -151,7 +144,7 @@ const LoginComponent = (props: ILoginComponent) => {
                             <Copyright />
                         </Box>
                     </form>
-                </div>
+                </Paper>
             </Grid>
         </Grid>
     )
